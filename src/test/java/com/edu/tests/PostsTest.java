@@ -15,7 +15,7 @@ public class PostsTest {
     @Test
     @Story("1")
     @Description("Get all posts. Verify HTTP response status code and content type.")
-    public void test() {
+    public void test_1() {
         given()
             .request().spec(posts.getRequestSpecification())
         .when()
