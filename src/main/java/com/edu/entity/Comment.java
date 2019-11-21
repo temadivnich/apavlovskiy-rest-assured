@@ -4,15 +4,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class PostEntity {
+public class Comment {
+
+    @JsonProperty("postId")
+    private Long postId;
 
     @JsonProperty("id")
     private Long id;
-    @JsonProperty("userId")
-    private Long userId;
-    @JsonProperty("title")
-    private String title;
+
+    @JsonProperty("name")
+    private String name;
+
+    @JsonProperty("email")
+    private String email;
+
     @JsonProperty("body")
     private String body;
-
 }
