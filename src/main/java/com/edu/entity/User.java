@@ -12,6 +12,8 @@ public class User {
        private String name;
        @JsonProperty("username")
        private String username;
+       @JsonProperty("password")
+       private String password;
        @JsonProperty("email")
        private String email;
        @JsonProperty("phone")

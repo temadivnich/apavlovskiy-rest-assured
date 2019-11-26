@@ -46,4 +46,12 @@ public class UsersTest {
         assertEquals(expectLat, fifthUser.get(0).getAddress().getGeo().getLatitude());
         assertEquals(expectLng, fifthUser.get(0).getAddress().getGeo().getLongitude());
     }
+
+    @Test
+    @Story("9")
+    @Description("Get user by street name. Verify HTTP status code. " +
+            "Verify street field of returned user record. /users")
+    public void test_9() {
+
+    }
 }
