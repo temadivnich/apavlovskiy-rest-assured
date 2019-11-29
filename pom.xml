@@ -22,6 +22,7 @@
         <javax.json.version>1.1</javax.json.version>
         <slf4j-api.version>1.7.25</slf4j-api.version>
         <slf4j-simple.version>1.6.2</slf4j-simple.version>
+        <json-schema-validator.version>4.0.0</json-schema-validator.version>
     </properties>
 
     <build>
@@ -67,6 +68,11 @@
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
             <version>${rest-assured.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>json-schema-validator</artifactId>
+            <version>${json-schema-validator.version}</version>
         </dependency>
 
         <!-- Guava -->

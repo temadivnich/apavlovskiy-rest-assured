@@ -6,12 +6,22 @@ import com.edu.entity.Post;
 import io.qameta.allure.Description;
 import io.qameta.allure.Story;
 import io.restassured.response.ValidatableResponse;
+import io.restassured.specification.RequestSpecification;
 import org.apache.http.HttpStatus;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.util.Map;
+import java.util.Set;
+
+import static com.edu.api.QueryParams.LIMIT;
+import static com.edu.api.QueryParams.PAGE;
 import static io.restassured.RestAssured.given;
+import static java.util.Collections.emptyMap;
 import static org.apache.http.HttpStatus.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.core.Is.is;
 import static org.testng.Assert.assertEquals;
 
 public class PostsTest {
@@ -32,21 +42,39 @@ public class PostsTest {
     @Story("1")
     @Description("Get all posts. Verify HTTP response status code and content type.")
     public void test_1() {
-        getPost("").assertThat().statusCode(SC_OK);
+        get(emptyMap(), "").assertThat().statusCode(SC_OK);
+    }
+
+    @Test
+    @Story("14")
+    @Description("Get only first 10 posts. Verify HTTP response status code. " +
+            "Verify that only first posts are returned. /posts")
+    public void test_14() {
+        var limit = 10;
+        var queryParams = Map.of(PAGE.value(), "1", LIMIT.value(), limit);
+        Post[] posts = get(queryParams, "")
+                .assertThat().statusCode(SC_OK)
+                .and().header("Link", is(notNullValue()))
+                .extract().as(Post[].class);
+        assertThat(posts.length, is(equalTo(limit)));
+    }
+
+    @Test()
+    @Story("15")
+    @Description("Get posts with id = 55 and id = 60. " +
+            "Verify HTTP response status code. Verify id values of returned records. /posts")
+    public void test_15() {
+        get(Map.of("id", Set.of("55", "60")), "")
+                .assertThat().statusCode(SC_OK)
+                .body("id", hasItems(55, 60))
+                .body("id", hasSize(2));
     }
 
     @Test(dataProvider = "postEntityDataProvider")
     @Story("19")
     @Description("Create a post. Verify HTTP response status code. /664/posts")
     public void test_19(Post postEntity) {
-        given()
-                .spec(posts.getRequestSpecification())
-                .basePath("/664/posts")
-                .body(posts.getJsonBody(postEntity))
-                .when()
-                .post()
-                .then()
-                .spec(posts.getResponseSpecification())
+        create(postEntity, posts.getRequestSpecification().basePath("/664/posts"))
                 .assertThat()
                 .statusCode(HttpStatus.SC_UNAUTHORIZED);
     }
@@ -57,19 +85,13 @@ public class PostsTest {
             "Verify HTTP response status code. Verify post is created. /664/posts")
     public void test_21(Post postEntity) {
         String authToken = registerController.getAccessToken();
-        Post postResponse = given().spec(posts.getRequestSpecification())
+        Post postResponse = create(postEntity, posts.getRequestSpecification()
                 .basePath("/664/posts")
-                .auth().preemptive().oauth2(authToken)
-                .body(posts.getJsonBody(postEntity))
-                .when().post()
-                .then().spec(posts.getResponseSpecification())
-                .assertThat()
-                .statusCode(SC_CREATED)
+                .auth().preemptive().oauth2(authToken))
+                .assertThat().statusCode(SC_CREATED)
                 .extract().as(Post.class);
-        Post actuallyCreated = given()
-                .spec(posts.getRequestSpecification())
-                .pathParam("postId", postResponse.getId())
-                .when().get().then().extract().body().as(Post.class);
+        Post actuallyCreated = get(emptyMap(), postResponse.getId().toString())
+                .extract().body().as(Post.class);
         assertEquals(postEntity.getTitle(), actuallyCreated.getTitle());
         assertEquals(postEntity.getBody(), actuallyCreated.getBody());
         assertEquals(postEntity.getUserId(), actuallyCreated.getUserId());
@@ -80,10 +102,10 @@ public class PostsTest {
     @Description("Create post entity and verify that the entity is created. " +
             "Verify HTTP response status code. Use JSON in body. /posts")
     public void test_22(Post postEntity) {
-        Post postResponse = createPost(postEntity)
+        Post postResponse = create(postEntity)
                 .assertThat().statusCode(SC_CREATED)
                 .extract().as(Post.class);
-        Post actuallyCreated = getPost(postResponse.getId().toString())
+        Post actuallyCreated = get(emptyMap(), postResponse.getId().toString())
                 .assertThat().statusCode(SC_OK)
                 .extract().body().as(Post.class);
         assertEquals(postEntity.getTitle(), actuallyCreated.getTitle());
@@ -95,9 +117,8 @@ public class PostsTest {
     @Story("23")
     @Description("Update non-existing entity. Verify HTTP response status code.  /posts")
     public void test_23(Post postEntity) {
-        updatePost(postEntity, "-1")
+        update(postEntity, "-1")
                 .assertThat().statusCode(SC_NOT_FOUND);
-
     }
 
     @Test(dataProvider = "postEntityDataProvider")
@@ -105,15 +126,15 @@ public class PostsTest {
     @Description("Create post entity and update the created entity. " +
             "Verify HTTP response status code and verify that the entity is updated.")
     public void test_24(Post expectedPost) {
-        Post createdPost = createPost(expectedPost)
+        Post createdPost = create(expectedPost)
                 .assertThat().statusCode(SC_CREATED)
                 .extract().as(Post.class);
 
         expectedPost.setTitle("Title updated");
-        updatePost(expectedPost, createdPost.getId().toString())
+        update(expectedPost, createdPost.getId().toString())
                 .assertThat().statusCode(SC_OK);
 
-        Post actualPost = getPost(createdPost.getId().toString())
+        Post actualPost = get(emptyMap(), createdPost.getId().toString())
                 .assertThat().statusCode(SC_OK)
                 .extract().as(Post.class);
         assertEquals(expectedPost.getTitle(), actualPost.getTitle());
@@ -123,7 +144,7 @@ public class PostsTest {
     @Story("25")
     @Description("Delete non-existing post entity. Verify HTTP response status code.")
     public void test_25() {
-        deletePost("-1").assertThat().statusCode(SC_NOT_FOUND);
+        delete("-1").assertThat().statusCode(SC_NOT_FOUND);
     }
 
     @Test(dataProvider = "postEntityDataProvider")
@@ -131,29 +152,30 @@ public class PostsTest {
     @Description("Create post entity, update the created entity, and delete the entity. " +
             "Verify HTTP response status code and verify that the entity is deleted.")
     public void test_26(Post expectedPost) {
-        String createdPostId = createPost(expectedPost)
+        String createdPostId = create(expectedPost)
                 .assertThat().statusCode(SC_CREATED)
                 .extract().as(Post.class).getId().toString();
 
         expectedPost.setTitle("Title updated");
-        updatePost(expectedPost, createdPostId)
+        update(expectedPost, createdPostId)
                 .assertThat().statusCode(SC_OK);
 
-        deletePost(createdPostId)
+        delete(createdPostId)
                 .assertThat().statusCode(SC_OK);
 
-        getPost(createdPostId)
+        get(emptyMap(), createdPostId)
                 .assertThat().statusCode(SC_NOT_FOUND);
     }
 
-    private ValidatableResponse getPost(String id) {
+    private ValidatableResponse get(Map<String, ?> queryParams, String id) {
         return given().spec(posts.getRequestSpecification())
                 .pathParam("postId", id)
+                .queryParams(queryParams)
                 .when().get()
                 .then().spec(posts.getResponseSpecification());
     }
 
-    private ValidatableResponse updatePost(Post anotherPost, String id) {
+    private ValidatableResponse update(Post anotherPost, String id) {
         return given()
                 .spec(posts.getRequestSpecification())
                 .pathParam("postId", id)
@@ -164,10 +186,9 @@ public class PostsTest {
                 .spec(posts.getResponseSpecification());
     }
 
-    private ValidatableResponse createPost(Post postEntity) {
+    private ValidatableResponse create(Post postEntity, RequestSpecification requestSpec) {
         return given()
-                .spec(posts.getRequestSpecification())
-                .pathParam("postId", "")
+                .spec(requestSpec)
                 .body(posts.getJsonBody(postEntity))
                 .when()
                 .post()
@@ -175,7 +196,12 @@ public class PostsTest {
                 .spec(posts.getResponseSpecification());
     }
 
-    private ValidatableResponse deletePost(String id) {
+    private ValidatableResponse create(Post postEntity) {
+        return create(postEntity, posts.getRequestSpecification()
+                .pathParam("postId", ""));
+    }
+
+    private ValidatableResponse delete(String id) {
         return given().spec(posts.getRequestSpecification())
                 .pathParam("postId", id)
                 .when().delete()

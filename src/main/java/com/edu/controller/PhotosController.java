@@ -14,6 +14,7 @@ public class PhotosController implements ControllerSpecification {
     return new RequestSpecBuilder()
             .addRequestSpecification(getBaseRequestSpecification())
             .setBasePath(PATH)
+            .log(LogDetail.ALL)
             .build();
   }
 
@@ -21,7 +22,7 @@ public class PhotosController implements ControllerSpecification {
   public ResponseSpecification getResponseSpecification() {
     return new ResponseSpecBuilder()
             .addResponseSpecification(getBaseResponseSpecification())
-            .log(LogDetail.HEADERS)
+            .log(LogDetail.ALL)
             .build();
   }
 }
