@@ -19,7 +19,6 @@ import static com.edu.api.QueryParams.PAGE;
 import static io.restassured.RestAssured.given;
 import static java.util.Collections.emptyMap;
 import static org.apache.http.HttpStatus.*;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.testng.Assert.assertEquals;
@@ -52,11 +51,10 @@ public class PostsTest {
     public void test_14() {
         var limit = 10;
         var queryParams = Map.of(PAGE.value(), "1", LIMIT.value(), limit);
-        Post[] posts = get(queryParams, "")
+        get(queryParams, "")
                 .assertThat().statusCode(SC_OK)
                 .and().header("Link", is(notNullValue()))
-                .extract().as(Post[].class);
-        assertThat(posts.length, is(equalTo(limit)));
+                .and().body("", hasSize(limit));
     }
 
     @Test()

@@ -2,14 +2,12 @@ package com.edu.tests;
 
 import com.edu.controller.ControllerSpecification;
 import com.edu.controller.PhotosController;
-import com.edu.entity.Photo;
 import io.qameta.allure.Description;
 import io.qameta.allure.Story;
 import io.restassured.response.ValidatableResponse;
 import org.testng.annotations.Test;
 
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static com.edu.api.QueryParams.END;
 import static com.edu.api.QueryParams.START;
@@ -17,7 +15,6 @@ import static io.restassured.RestAssured.given;
 import static java.util.Collections.emptyMap;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.apache.http.HttpStatus.SC_OK;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 public class PhotosTest {
@@ -45,12 +42,10 @@ public class PhotosTest {
     @Description("Get photos from the third album. Verify HTTP response status code. " +
             "Verify that only photos from third album are returned. /photos")
     public void test_12() {
-        Long albumId = 3L;
-        Photo[] photos = get(Map.of("albumId", albumId))
+        int albumId = 3;
+        get(Map.of("albumId", albumId))
                 .assertThat().statusCode(SC_OK)
-                .extract().as(Photo[].class);
-        Stream.of(photos).forEach(photo ->
-                assertThat(albumId, is(equalTo(photo.getAlbumId()))));
+                .body("albumId", everyItem(is(albumId)));
     }
 
     @Test
@@ -62,7 +57,7 @@ public class PhotosTest {
                 START.value(), "20", END.value(), "25");
         get(queryParams)
                 .assertThat().statusCode(SC_OK)
-                .body("albumId", hasItems(1, 1, 1, 1, 1))
+                .body("albumId", everyItem(is(1)))
                 .body("id", hasItems(21, 22, 23, 24, 25))
                 .body("id", hasSize(5));
     }

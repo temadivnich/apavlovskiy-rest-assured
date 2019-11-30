@@ -40,7 +40,7 @@ public class CommentsTest {
     @Story("2")
     @Description("Get all comments and verify response charset.")
     public void test_2() {
-        getComment(emptyMap()).assertThat().contentType(JSON.withCharset("UTF-8"));
+        get(emptyMap()).assertThat().contentType(JSON.withCharset("UTF-8"));
     }
 
     @Test
@@ -48,7 +48,7 @@ public class CommentsTest {
     @Description("Get comments with postId sorted in descending order. " +
             "Verify HTTP response status code. Verify that records are sorted in response.")
     public void test_11() {
-        ValidatableResponse response = getComment(Map.of(SORT.value(), "postId", ORDER.value(), "desc"));
+        ValidatableResponse response = get(Map.of(SORT.value(), "postId", ORDER.value(), "desc"));
         List<Long> listPostId = response.extract()
                 .jsonPath().getList("postId", Long.class);
         assertTrue(Ordering.natural().reverse().isOrdered(listPostId));
@@ -58,12 +58,12 @@ public class CommentsTest {
     @Story("18")
     @Description("Create already existing comment entity. Verify HTTP response status code. /comments")
     public void test_18(Comment commentEntity) {
-        createComment(commentEntity);
-        createComment(commentEntity)
+        create(commentEntity);
+        create(commentEntity)
                 .assertThat().statusCode(SC_CREATED);
     }
 
-    private ValidatableResponse getComment(Map<String, ?> params) {
+    private ValidatableResponse get(Map<String, ?> params) {
         return given()
                 .spec(commentController.getRequestSpecification())
                 .queryParams(params)
@@ -73,7 +73,7 @@ public class CommentsTest {
                 .spec(commentController.getResponseSpecification());
     }
 
-    private ValidatableResponse createComment(Comment bodyJson) {
+    private ValidatableResponse create(Comment bodyJson) {
         return given().spec(commentController.getRequestSpecification())
                 .body(commentController.getJsonBody(bodyJson))
                 .when().post()
