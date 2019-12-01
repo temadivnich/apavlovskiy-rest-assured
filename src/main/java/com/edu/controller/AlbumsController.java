@@ -8,13 +8,14 @@ import io.restassured.specification.ResponseSpecification;
 
 public class AlbumsController implements ControllerSpecification {
 
-  private static final String PATH = "/albums/{albumId}";
+  private static final String PATH = "/albums/{id}";
 
   @Override
   public RequestSpecification getRequestSpecification() {
     return new RequestSpecBuilder()
             .addRequestSpecification(getBaseRequestSpecification())
             .setBasePath(PATH)
+            .log(LogDetail.URI)
             .build();
   }
 
@@ -22,7 +23,7 @@ public class AlbumsController implements ControllerSpecification {
   public ResponseSpecification getResponseSpecification() {
     return new ResponseSpecBuilder()
             .addResponseSpecification(getBaseResponseSpecification())
-            .log(LogDetail.ALL)
+            .log(LogDetail.STATUS)
             .build();
   }
 }

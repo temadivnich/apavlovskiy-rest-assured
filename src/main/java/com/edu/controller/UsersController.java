@@ -8,14 +8,14 @@ import io.restassured.specification.ResponseSpecification;
 
 public class UsersController implements ControllerSpecification {
 
-  private static final String PATH = "/users/{userId}";
+  private static final String PATH = "/users/{id}";
 
   @Override
   public RequestSpecification getRequestSpecification() {
     return new RequestSpecBuilder()
             .addRequestSpecification(getBaseRequestSpecification())
             .setBasePath(PATH)
-            .log(LogDetail.ALL)
+            .log(LogDetail.URI)
             .build();
   }
 
@@ -23,7 +23,7 @@ public class UsersController implements ControllerSpecification {
   public ResponseSpecification getResponseSpecification() {
     return new ResponseSpecBuilder()
             .addResponseSpecification(getBaseResponseSpecification())
-            .log(LogDetail.ALL)
+            .log(LogDetail.STATUS)
             .build();
   }
 }

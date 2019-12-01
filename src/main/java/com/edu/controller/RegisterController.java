@@ -25,14 +25,14 @@ public class RegisterController implements ControllerSpecification {
         return new RequestSpecBuilder()
                 .addRequestSpecification(getBaseRequestSpecification())
                 .setBasePath(PATH)
-                .log(LogDetail.ALL)
+                .log(LogDetail.URI)
                 .build();
     }
 
     public ResponseSpecification getResponseSpecification() {
         return new ResponseSpecBuilder()
                 .addResponseSpecification(getBaseResponseSpecification())
-                .log(LogDetail.ALL)
+                .log(LogDetail.STATUS)
                 .build();
     }
 

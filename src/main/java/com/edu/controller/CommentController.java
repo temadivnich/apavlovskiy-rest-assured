@@ -1,8 +1,5 @@
 package com.edu.controller;
 
-import com.edu.entity.Comment;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.filter.log.LogDetail;
@@ -13,32 +10,21 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CommentController implements ControllerSpecification {
-    private static final String PATH = "/comments";
+  private static final String PATH = "/comments/{id}";
 
     public RequestSpecification getRequestSpecification() {
         return new RequestSpecBuilder()
                 .addRequestSpecification(getBaseRequestSpecification())
                 .setBasePath(PATH)
+                .log(LogDetail.URI)
                 .build();
     }
 
     public ResponseSpecification getResponseSpecification() {
         return new ResponseSpecBuilder()
                 .addResponseSpecification(getBaseResponseSpecification())
-                .log(LogDetail.ALL)
+                .log(LogDetail.STATUS)
                 .build();
-    }
-
-    public String getJsonBody(Comment entity) {
-        ObjectMapper mapper = new ObjectMapper();
-        String json = "";
-        try {
-            json = mapper.writeValueAsString(entity);
-            log.info("Generated JSON:\r\n" + json);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return json;
     }
 
 }

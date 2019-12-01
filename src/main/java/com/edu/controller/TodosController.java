@@ -8,13 +8,14 @@ import io.restassured.specification.ResponseSpecification;
 
 public class TodosController implements ControllerSpecification {
 
-    private static final String PATH = "/todos/{taskId}";
+  private static final String PATH = "/todos/{id}";
 
     @Override
     public RequestSpecification getRequestSpecification() {
         return new RequestSpecBuilder()
                 .addRequestSpecification(getBaseRequestSpecification())
                 .setBasePath(PATH)
+                .log(LogDetail.URI)
                 .build();
     }
 
@@ -22,7 +23,7 @@ public class TodosController implements ControllerSpecification {
     public ResponseSpecification getResponseSpecification() {
         return new ResponseSpecBuilder()
                 .addResponseSpecification(getBaseResponseSpecification())
-                .log(LogDetail.URI)
+                .log(LogDetail.STATUS)
                 .build();
     }
 }

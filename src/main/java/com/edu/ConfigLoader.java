@@ -2,7 +2,6 @@ package com.edu;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Map;
 import java.util.Properties;
 
 public class ConfigLoader {
@@ -32,7 +31,4 @@ public class ConfigLoader {
         return properties.getProperty("base.path");
     }
 
-    public static Map<String, String> getBaseHeader() {
-        return Map.of("requestSpec.baseHeaderName", "requestSpec.baseHeaderValue");
-    }
 }
