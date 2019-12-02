@@ -5,8 +5,5 @@
         <packages>
             <package name="com.edu.tests"/>
         </packages>
-<!--        <classes>-->
-<!--            <class name="com.edu.tests" />-->
-<!--        </classes>-->
     </test>
 </suite>

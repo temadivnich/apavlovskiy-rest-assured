@@ -17,7 +17,7 @@ import static org.hamcrest.Matchers.*;
 
 public class UsersTest {
 
-    private ControllerSpecification users = new UsersController();
+    private final ControllerSpecification users = new UsersController();
 
     @DataProvider(name = "verifyGeoLocationProvider")
     public static Object[][] verifyGeoLocationProvider() {
@@ -33,8 +33,8 @@ public class UsersTest {
     public void test_6(String expectLat, String expectLng, String userId) {
         users.get(emptyMap(), "")
                 .assertThat().statusCode(SC_OK)
-                .body("address.geo.lat["+userId+"]", is(expectLat))
-                .body("address.geo.lng["+userId+"]", is(expectLng));
+                .body("address.geo.lat[" + userId + "]", is(expectLat))
+                .body("address.geo.lng[" + userId + "]", is(expectLng));
     }
 
     @Test

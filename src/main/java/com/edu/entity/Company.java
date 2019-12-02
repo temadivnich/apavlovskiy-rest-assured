@@ -5,10 +5,11 @@ import lombok.Data;
 
 @Data
 public class Company {
-        @JsonProperty("name")
-        private String name;
-        @JsonProperty("catchPhrase")
-        private String catchPhrase;
-        @JsonProperty("bs")
-        private String bs;
+
+    @JsonProperty("name")
+    private String name;
+    @JsonProperty("catchPhrase")
+    private String catchPhrase;
+    @JsonProperty("bs")
+    private String bs;
 }

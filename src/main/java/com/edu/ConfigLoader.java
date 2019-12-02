@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class ConfigLoader {
-    private static Properties properties = new Properties();
+    private static final Properties properties = new Properties();
 
     static {
         try (FileInputStream inputStream = new FileInputStream("target/classes/application.properties")) {

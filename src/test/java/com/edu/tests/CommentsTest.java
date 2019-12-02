@@ -20,7 +20,7 @@ import static org.testng.Assert.assertTrue;
 
 public class CommentsTest {
 
-    private CommentController commentController = new CommentController();
+    private final CommentController commentController = new CommentController();
 
     @DataProvider(name = "commentDataProvider")
     public static Object[][] commentDataProvider() {
@@ -38,7 +38,7 @@ public class CommentsTest {
     @Story("2")
     @Description("Get all comments and verify response charset.")
     public void test_2() {
-      commentController.get(emptyMap(), "").assertThat().contentType(JSON.withCharset("UTF-8"));
+        commentController.get(emptyMap(), "").assertThat().contentType(JSON.withCharset("UTF-8"));
     }
 
     @Test
@@ -46,8 +46,8 @@ public class CommentsTest {
     @Description("Get comments with postId sorted in descending order. " +
             "Verify HTTP response status code. Verify that records are sorted in response.")
     public void test_11() {
-      Map<String, String> queryParams = Map.of(SORT.value(), "postId", ORDER.value(), "desc");
-      List<Long> listPostId = commentController.get(queryParams, "").extract()
+        Map<String, String> queryParams = Map.of(SORT.value(), "postId", ORDER.value(), "desc");
+        List<Long> listPostId = commentController.get(queryParams, "").extract()
                 .jsonPath().getList("postId", Long.class);
         assertTrue(Ordering.natural().reverse().isOrdered(listPostId));
     }
@@ -56,8 +56,8 @@ public class CommentsTest {
     @Story("18")
     @Description("Create already existing comment entity. Verify HTTP response status code. /comments")
     public void test_18(Comment commentEntity) {
-      commentController.create(commentEntity);
-      commentController.create(commentEntity)
+        commentController.create(commentEntity);
+        commentController.create(commentEntity)
                 .assertThat().statusCode(SC_CREATED);
     }
 

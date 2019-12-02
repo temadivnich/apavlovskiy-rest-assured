@@ -16,13 +16,13 @@ import static org.hamcrest.Matchers.*;
 
 public class PhotosTest {
 
-  private PhotosController photos = new PhotosController();
+    private final PhotosController photos = new PhotosController();
 
     @Test
     @Story("4")
     @Description("Get all photos and verify that content length header is absent in response.")
     public void test_4() {
-      photos.get(emptyMap())
+        photos.get(emptyMap())
                 .assertThat().header("Content-Length", is(nullValue()));
     }
 
@@ -30,7 +30,7 @@ public class PhotosTest {
     @Story("5")
     @Description("Verify response time for photos, endpoint is less than 10 seconds.")
     public void test_5() {
-      photos.get(emptyMap())
+        photos.get(emptyMap())
                 .assertThat().time(lessThan(10L), SECONDS);
     }
 
@@ -40,7 +40,7 @@ public class PhotosTest {
             "Verify that only photos from third album are returned. /photos")
     public void test_12() {
         int albumId = 3;
-      photos.get(Map.of("albumId", albumId))
+        photos.get(Map.of("albumId", albumId))
                 .assertThat().statusCode(SC_OK)
                 .body("albumId", everyItem(is(albumId)));
     }
@@ -52,7 +52,7 @@ public class PhotosTest {
     public void test_16() {
         Map<String, String> queryParams = Map.of("albumId", "1",
                 START.value(), "20", END.value(), "25");
-      photos.get(queryParams)
+        photos.get(queryParams)
                 .assertThat().statusCode(SC_OK)
                 .body("albumId", everyItem(is(1)))
                 .body("id", hasItems(21, 22, 23, 24, 25))

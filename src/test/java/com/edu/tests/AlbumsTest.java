@@ -9,7 +9,7 @@ import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 import static org.hamcrest.Matchers.equalTo;
 
 public class AlbumsTest {
-    private AlbumsController albums = new AlbumsController();
+    private final AlbumsController albums = new AlbumsController();
 
     @Test
     @Story("3")

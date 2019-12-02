@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class GeoLocation {
+
     @JsonProperty("lat")
     private String latitude;
     @JsonProperty("lng")

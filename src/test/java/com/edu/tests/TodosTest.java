@@ -11,14 +11,14 @@ import static org.hamcrest.Matchers.is;
 
 public class TodosTest {
 
-    private ControllerSpecification todos = new TodosController();
+    private final ControllerSpecification todos = new TodosController();
 
     @Test
     @Story("8")
     @Description("Verify HTTP status code and completion status of the 10th task.")
     public void test_8() {
         todos.get("10")
-              .assertThat()
+                .assertThat()
                 .statusCode(HttpStatus.SC_OK)
                 .body("completed", is(true));
     }
