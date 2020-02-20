@@ -6,6 +6,7 @@ import com.edu.entity.Post;
 import io.qameta.allure.Description;
 import io.qameta.allure.Story;
 import org.apache.http.HttpStatus;
+import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -18,10 +19,10 @@ import static java.util.Collections.emptyMap;
 import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
-import static org.testng.Assert.assertEquals;
 
 public class PostsTest {
 
+    private static final String ERROR_MESSAGE = "Post [%s] assertion failure: [%s] doesn't match [%s] ";
     private final PostsController posts = new PostsController();
     private final RegisterController registerController = new RegisterController();
 
@@ -87,9 +88,9 @@ public class PostsTest {
                 .extract().as(Post.class);
         Post actuallyCreated = posts.get(emptyMap(), postResponse.getId().toString())
                 .extract().body().as(Post.class);
-        assertEquals(postEntity.getTitle(), actuallyCreated.getTitle());
-        assertEquals(postEntity.getBody(), actuallyCreated.getBody());
-        assertEquals(postEntity.getUserId(), actuallyCreated.getUserId());
+        assertEquals(postEntity.getTitle(), actuallyCreated.getTitle(), "getTitle");
+        assertEquals(postEntity.getBody(), actuallyCreated.getBody(), "getBody");
+        assertEquals(postEntity.getUserId(), actuallyCreated.getUserId(), "getUserId");
     }
 
     @Test(dataProvider = "postEntityDataProvider") //same as test_21 ?
@@ -103,9 +104,9 @@ public class PostsTest {
         Post actuallyCreated = posts.get(emptyMap(), postResponse.getId().toString())
                 .assertThat().statusCode(SC_OK)
                 .extract().body().as(Post.class);
-        assertEquals(postEntity.getTitle(), actuallyCreated.getTitle());
-        assertEquals(postEntity.getBody(), actuallyCreated.getBody());
-        assertEquals(postEntity.getUserId(), actuallyCreated.getUserId());
+        assertEquals(postEntity.getTitle(), actuallyCreated.getTitle(), "title");
+        assertEquals(postEntity.getBody(), actuallyCreated.getBody(), "body");
+        assertEquals(postEntity.getUserId(), actuallyCreated.getUserId(), "user id");
     }
 
     @Test(dataProvider = "postEntityDataProvider")
@@ -132,7 +133,7 @@ public class PostsTest {
         Post actualPost = posts.get(emptyMap(), createdPost.getId().toString())
                 .assertThat().statusCode(SC_OK)
                 .extract().as(Post.class);
-        assertEquals(expectedPost.getTitle(), actualPost.getTitle());
+        assertEquals(expectedPost.getTitle(), actualPost.getTitle(), "title");
     }
 
     @Test
@@ -162,4 +163,7 @@ public class PostsTest {
                 .assertThat().statusCode(SC_NOT_FOUND);
     }
 
+    private static void assertEquals(Object expected, Object actual, String message) {
+        Assert.assertEquals(actual, expected, String.format(ERROR_MESSAGE, message, expected, actual));
+    }
 }

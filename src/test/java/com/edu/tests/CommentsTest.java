@@ -49,7 +49,7 @@ public class CommentsTest {
         Map<String, String> queryParams = Map.of(SORT.value(), "postId", ORDER.value(), "desc");
         List<Long> listPostId = commentController.get(queryParams, "").extract()
                 .jsonPath().getList("postId", Long.class);
-        assertTrue(Ordering.natural().reverse().isOrdered(listPostId));
+        assertTrue(Ordering.natural().reverse().isOrdered(listPostId), "Response body is not sorted by postID");
     }
 
     @Test(dataProvider = "commentDataProvider")

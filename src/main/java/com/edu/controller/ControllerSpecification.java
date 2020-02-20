@@ -44,7 +44,8 @@ public interface ControllerSpecification {
                 .when()
                 .get()
                 .then()
-                .spec(getResponseSpecification());
+                .spec(getResponseSpecification())
+                .log().ifValidationFails(LogDetail.BODY);
     }
 
 
@@ -58,7 +59,8 @@ public interface ControllerSpecification {
                 .pathParam("id", id)
                 .queryParams(queryParams)
                 .when().get()
-                .then().spec(getResponseSpecification());
+                .then().spec(getResponseSpecification())
+                .log().ifValidationFails(LogDetail.BODY);
     }
 
     default ValidatableResponse create(Entity postEntity, RequestSpecification requestSpec) {
@@ -78,7 +80,8 @@ public interface ControllerSpecification {
                 .when()
                 .post()
                 .then()
-                .spec(getResponseSpecification());
+                .spec(getResponseSpecification())
+                .log().ifValidationFails(LogDetail.BODY);
     }
 
 
@@ -90,14 +93,16 @@ public interface ControllerSpecification {
                 .when()
                 .patch()
                 .then()
-                .spec(getResponseSpecification());
+                .spec(getResponseSpecification())
+                .log().ifValidationFails(LogDetail.BODY);
     }
 
     default ValidatableResponse delete(String id) {
         return given().spec(getRequestSpecification())
                 .pathParam("id", id)
                 .when().delete()
-                .then().spec(getResponseSpecification());
+                .then().spec(getResponseSpecification())
+                .log().ifValidationFails(LogDetail.BODY);
     }
 
     private String getJsonBody(Entity postEntity) {
